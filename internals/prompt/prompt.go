@@ -21,6 +21,12 @@ func (p *Prompt) Show() (input string) {
 		panic(wdErr)
 	}
 
+	homeDir, hdErr := os.UserHomeDir()
+	if hdErr != nil {
+		panic(hdErr)
+	}
+
+	currentDir = strings.Replace(currentDir, homeDir, "~", 1)
 	fmt.Printf("%s\n%s ", currentDir, string(promptRune))
 
 	input, err := p.reader.ReadString('\n')
