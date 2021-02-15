@@ -15,6 +15,7 @@ func ParseCommand(input string) error {
 
 	cmd := exec.Command(cmdSplit[0], cmdSplit[1:]...)
 	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
 	return cmd.Run()
 }
