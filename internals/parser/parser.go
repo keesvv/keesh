@@ -4,6 +4,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/keesvv/keesh/internals/builtins"
 )
 
 func preprocessInput(input string) (output string) {
@@ -18,6 +20,7 @@ func preprocessInput(input string) (output string) {
 	return
 }
 
+// ParseCommand parses and executes the given input.
 func ParseCommand(input string) error {
 	if input == "" {
 		return nil
@@ -26,7 +29,14 @@ func ParseCommand(input string) error {
 	input = preprocessInput(input)
 	cmdSplit := strings.Split(input, " ")
 
-	cmd := exec.Command(cmdSplit[0], cmdSplit[1:]...)
+	name := cmdSplit[0]
+	args := cmdSplit[1:]
+
+	if builtins.IsBuiltin(name) {
+		return builtins.Execute(name, args)
+	}
+
+	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
