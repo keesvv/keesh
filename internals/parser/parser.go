@@ -11,6 +11,8 @@ func ParseCommand(input string) error {
 		return nil
 	}
 
+	input = os.ExpandEnv(input)
+
 	cmdSplit := strings.Split(input, " ")
 
 	cmd := exec.Command(cmdSplit[0], cmdSplit[1:]...)
