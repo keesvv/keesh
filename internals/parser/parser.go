@@ -34,7 +34,9 @@ func ParseCommand(input string) error {
 	args := cmdSplit[1:]
 
 	if alias.IsAlias(name) {
-		name = alias.ExpandAlias(name)
+		expandedArgs := strings.Split(alias.ExpandAlias(name), " ")
+		name = expandedArgs[0]
+		args = append(expandedArgs[1:], args...)
 	}
 
 	if builtins.IsBuiltin(name) {

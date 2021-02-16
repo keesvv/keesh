@@ -8,7 +8,7 @@ func IsAlias(name string) bool {
 	return ok
 }
 
-// ExpandAlias returns
+// ExpandAlias returns the command associated with the alias.
 func ExpandAlias(name string) string {
 	return aliasMap[name]
 }
