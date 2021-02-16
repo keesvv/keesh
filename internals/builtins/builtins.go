@@ -1,8 +1,9 @@
 package builtins
 
 var builtinsMap = map[string]func(args ...string) error{
-	"cd":   Chdir,
-	"exit": Exit,
+	"cd":    Chdir,
+	"exit":  Exit,
+	"alias": Alias,
 }
 
 // IsBuiltin returns whether the given command is a shell built-in or not.

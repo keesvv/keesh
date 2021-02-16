@@ -5,6 +5,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/keesvv/keesh/internals/alias"
 	"github.com/keesvv/keesh/internals/builtins"
 )
 
@@ -31,6 +32,10 @@ func ParseCommand(input string) error {
 
 	name := cmdSplit[0]
 	args := cmdSplit[1:]
+
+	if alias.IsAlias(name) {
+		name = alias.ExpandAlias(name)
+	}
 
 	if builtins.IsBuiltin(name) {
 		return builtins.Execute(name, args)
