@@ -3,11 +3,13 @@ package prompt
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/keesvv/keesh/internals/util"
 )
 
 const promptRune rune = '❯'
@@ -47,7 +49,10 @@ func (p *Prompt) Show() (input string) {
 	fmt.Printf("%s %s\n%s ", segDir, segIcons, segArrow)
 
 	input, err := p.reader.ReadString('\n')
-	if err != nil {
+	if err == io.EOF {
+		fmt.Println()
+		util.Exit()
+	} else if err != nil {
 		panic(err)
 	}
 
