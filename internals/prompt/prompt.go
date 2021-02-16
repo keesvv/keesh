@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
 )
 
 const promptRune rune = '❯'
@@ -26,8 +28,9 @@ func (p *Prompt) Show() (input string) {
 		panic(hdErr)
 	}
 
-	currentDir = strings.Replace(currentDir, homeDir, "~", 1)
-	fmt.Printf("%s\n%s ", currentDir, string(promptRune))
+	currentDir = strings.Replace(currentDir, homeDir, color.HiCyanString("~"), 1)
+	currentDir = strings.ReplaceAll(currentDir, "/", color.HiBlackString("/"))
+	fmt.Printf("%s\n%s ", currentDir, color.HiGreenString(string(promptRune)))
 
 	input, err := p.reader.ReadString('\n')
 	if err != nil {
