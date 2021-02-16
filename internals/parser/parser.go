@@ -12,6 +12,15 @@ import (
 )
 
 func preprocessInput(input string) (output string) {
+	if input == "" {
+		return
+	}
+
+	// Ignore comments
+	if input[0] == '#' {
+		return
+	}
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		panic(err)
@@ -25,11 +34,12 @@ func preprocessInput(input string) (output string) {
 
 // ParseCommand parses and executes the given input.
 func ParseCommand(input string) {
+	input = preprocessInput(input)
+
 	if input == "" {
 		return
 	}
 
-	input = preprocessInput(input)
 	cmdSplit := strings.Split(input, " ")
 
 	name := cmdSplit[0]
