@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -22,9 +24,9 @@ func preprocessInput(input string) (output string) {
 }
 
 // ParseCommand parses and executes the given input.
-func ParseCommand(input string) error {
+func ParseCommand(input string) {
 	if input == "" {
-		return nil
+		return
 	}
 
 	input = preprocessInput(input)
@@ -40,12 +42,19 @@ func ParseCommand(input string) error {
 	}
 
 	if builtins.IsBuiltin(name) {
-		return builtins.Execute(name, args)
+		builtins.Execute(name, args)
+		return
 	}
 
 	cmd := exec.Command(name, args...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stdout
 	cmd.Stdin = os.Stdin
-	return cmd.Run()
+
+	err := cmd.Run()
+	if errors.Is(err, exec.ErrNotFound) {
+		fmt.Println("command not found")
+	} else if err != nil {
+		fmt.Println(err)
+	}
 }

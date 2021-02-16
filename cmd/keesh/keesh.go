@@ -1,9 +1,7 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os/exec"
 
 	"github.com/keesvv/keesh/internals/config"
 	"github.com/keesvv/keesh/internals/parser"
@@ -22,13 +20,7 @@ func main() {
 
 	for {
 		input := p.Show()
-
-		if err := parser.ParseCommand(input); errors.Is(err, exec.ErrNotFound) {
-			fmt.Println("command not found")
-		} else if err != nil {
-			fmt.Println(err)
-		}
-
+		parser.ParseCommand(input)
 		fmt.Println()
 	}
 }
