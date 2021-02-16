@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/fatih/color"
@@ -28,9 +29,22 @@ func (p *Prompt) Show() (input string) {
 		panic(hdErr)
 	}
 
-	currentDir = strings.Replace(currentDir, homeDir, color.HiCyanString("~"), 1)
-	currentDir = strings.ReplaceAll(currentDir, "/", color.HiBlackString("/"))
-	fmt.Printf("%s\n%s ", currentDir, color.HiGreenString(string(promptRune)))
+	segDir := currentDir
+	segDir = strings.Replace(segDir, homeDir, color.HiCyanString("~"), 1)
+	segDir = strings.ReplaceAll(segDir, "/", color.HiBlackString("/"))
+
+	segArrow := color.HiGreenString(string(promptRune))
+
+	icons := make([]string, 0, 1)
+
+	if _, err := os.Stat(path.Join(currentDir, ".git")); err == nil {
+		icons = append(icons, color.HiRedString(""))
+	}
+
+	segIcons := strings.Join(icons, " ")
+
+	// Print all segments
+	fmt.Printf("%s %s\n%s ", segDir, segIcons, segArrow)
 
 	input, err := p.reader.ReadString('\n')
 	if err != nil {
