@@ -10,6 +10,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/keesvv/keesh/internals/util"
+	"github.com/pkg/term"
 )
 
 const promptRune rune = '❯'
@@ -17,6 +18,7 @@ const promptRune rune = '❯'
 // Prompt represents a shell prompt.
 type Prompt struct {
 	reader *bufio.Reader
+	term   *term.Term
 }
 
 // Show displays the prompt.
@@ -61,7 +63,14 @@ func (p *Prompt) Show() (input string) {
 
 // NewPrompt instantiates a Prompt.
 func NewPrompt() *Prompt {
+	term, err := term.Open("/dev/pts/1") // FIXME
+
+	if err != nil {
+		panic(err)
+	}
+
 	return &Prompt{
 		reader: bufio.NewReader(os.Stdin),
+		term:   term,
 	}
 }
