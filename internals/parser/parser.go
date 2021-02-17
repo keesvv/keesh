@@ -63,7 +63,7 @@ func ParseCommand(input string) {
 
 	err := cmd.Run()
 	if errors.Is(err, exec.ErrNotFound) {
-		fmt.Println("command not found")
+		fmt.Printf("command '%s' not found\n", name)
 	} else if err != nil {
 		fmt.Println(err)
 	}
