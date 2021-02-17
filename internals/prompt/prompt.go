@@ -3,10 +3,10 @@ package prompt
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"os"
 	"path"
 	"strings"
+	"unicode"
 
 	"github.com/fatih/color"
 	"github.com/keesvv/keesh/internals/util"
@@ -50,20 +50,51 @@ func (p *Prompt) Show() (input string) {
 	// Print all segments
 	fmt.Printf("%s %s\n%s ", segDir, segIcons, segArrow)
 
-	input, err := p.reader.ReadString('\n')
-	if err == io.EOF {
-		fmt.Println()
-		util.Exit()
-	} else if err != nil {
-		panic(err)
+	// Enter cbreak mode
+	p.term.SetCbreak()
+
+	for {
+		b, err := p.reader.ReadByte()
+		if err != nil {
+			panic(err)
+		}
+
+		// CTRL + D
+		if b == 4 {
+			fmt.Println()
+			util.Exit()
+		}
+
+		// Newline
+		if b == 10 {
+			fmt.Println()
+			break
+		}
+
+		// Backspace
+		if b == 127 {
+			if len(input) > 0 {
+				fmt.Print("\b \b")
+				input = input[:len(input)-1]
+			}
+			continue
+		}
+
+		if !unicode.IsPrint(rune(b)) {
+			continue
+		}
+
+		fmt.Print(string(b))
+		input += string(b)
 	}
 
+	p.term.Restore()
 	return strings.TrimSpace(input)
 }
 
 // NewPrompt instantiates a Prompt.
 func NewPrompt() *Prompt {
-	term, err := term.Open("/dev/pts/1") // FIXME
+	term, err := term.Open(os.Stdout.Name())
 
 	if err != nil {
 		panic(err)
