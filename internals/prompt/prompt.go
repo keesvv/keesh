@@ -25,8 +25,9 @@ var (
 
 // Prompt represents a shell prompt.
 type Prompt struct {
-	reader *bufio.Reader
-	term   *term.Term
+	reader  *bufio.Reader
+	term    *term.Term
+	lastDir string
 }
 
 // Show displays the prompt.
@@ -59,6 +60,7 @@ func (p *Prompt) Show() (input string) {
 	// Enter cbreak mode
 	p.term.SetCbreak()
 
+	// TODO: refactor
 	for {
 		b, err := p.reader.ReadByte()
 		if err != nil {
@@ -111,8 +113,21 @@ func (p *Prompt) Show() (input string) {
 			continue
 		}
 
-		fmt.Print(string(b))
 		input += string(b)
+		fmt.Print(string(b))
+
+		if input == ".." {
+			input = "cd .."
+			p.lastDir = currentDir
+			fmt.Println()
+			break
+		}
+
+		if input == ",," {
+			input = fmt.Sprintf("cd %s", p.lastDir)
+			fmt.Println()
+			break
+		}
 	}
 
 	p.term.Restore()
