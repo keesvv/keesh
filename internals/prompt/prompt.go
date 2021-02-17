@@ -14,7 +14,14 @@ import (
 	"github.com/pkg/term"
 )
 
-const promptRune rune = '❯'
+const (
+	arrowRune rune = '❯'
+	gitRune   rune = ''
+)
+
+var (
+	segArrow string = color.HiGreenString(string(arrowRune))
+)
 
 // Prompt represents a shell prompt.
 type Prompt struct {
@@ -38,12 +45,10 @@ func (p *Prompt) Show() (input string) {
 	segDir = strings.Replace(segDir, homeDir, color.HiCyanString("~"), 1)
 	segDir = strings.ReplaceAll(segDir, "/", color.HiBlackString("/"))
 
-	segArrow := color.HiGreenString(string(promptRune))
-
 	icons := make([]string, 0, 1)
 
 	if _, err := os.Stat(path.Join(currentDir, ".git")); err == nil {
-		icons = append(icons, color.HiRedString(""))
+		icons = append(icons, color.HiRedString(string(gitRune)))
 	}
 
 	segIcons := strings.Join(icons, " ")

@@ -11,27 +11,6 @@ import (
 	"github.com/keesvv/keesh/internals/builtins"
 )
 
-func preprocessInput(input string) (output string) {
-	if input == "" {
-		return
-	}
-
-	// Ignore comments
-	if input[0] == '#' {
-		return
-	}
-
-	home, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
-	output = input
-	output = strings.ReplaceAll(output, "~", home)
-	output = os.ExpandEnv(output)
-	return
-}
-
 // ParseCommand parses and executes the given input.
 func ParseCommand(input string) {
 	input = preprocessInput(input)
