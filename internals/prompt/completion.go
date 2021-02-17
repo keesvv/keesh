@@ -1,6 +1,7 @@
 package prompt
 
 import (
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -8,20 +9,28 @@ import (
 
 // AutoComplete interfaces with `fzf` to provide autocompletion.
 func AutoComplete(relPath string) (string, error) {
-	ls := exec.Command("ls", relPath)
 	fzf := exec.Command("fzf")
 
-	pipe, err := ls.StdinPipe()
-	defer pipe.Close()
-
+	files, err := ioutil.ReadDir(".")
 	if err != nil {
 		return "", err
 	}
 
-	fzf.Stdin = os.Stdin
-	fzf.Stderr = os.Stderr
+	var dirs []string
+	for _, file := range files {
+		entry := file.Name()
 
-	ls.Run()
+		if file.IsDir() {
+			entry += "/"
+		}
+
+		dirs = append(dirs, entry)
+	}
+
+	r := strings.NewReader(strings.Join(dirs, "\n"))
+
+	fzf.Stdin = r
+	fzf.Stderr = os.Stderr
 
 	completed, err := fzf.Output()
 	return strings.TrimSpace(string(completed)), err

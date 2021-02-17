@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 	"unicode"
@@ -57,6 +58,27 @@ func (p *Prompt) Show() (input string) {
 		b, err := p.reader.ReadByte()
 		if err != nil {
 			panic(err)
+		}
+
+		// Tab
+		if b == 9 {
+			cmpl, err := AutoComplete("")
+
+			if err != nil {
+				code := err.(*exec.ExitError).ExitCode()
+
+				// Aborted or completion not found
+				if code == 1 || code == 130 {
+					continue
+				}
+
+				fmt.Printf("\n%s\n", err)
+				break
+			}
+
+			fmt.Print(cmpl)
+			input += cmpl
+			continue
 		}
 
 		// CTRL + D
