@@ -11,6 +11,18 @@ import (
 	"github.com/keesvv/keesh/internals/builtins"
 )
 
+func handleError(err error, name string) {
+	if err == nil {
+		return
+	}
+
+	if errors.Is(err, exec.ErrNotFound) {
+		fmt.Printf("command '%s' not found\n", name)
+	} else if err != nil {
+		fmt.Println(err)
+	}
+}
+
 // ParseCommand parses and executes the given input.
 func ParseCommand(input string) {
 	input = preprocessInput(input)
@@ -31,7 +43,7 @@ func ParseCommand(input string) {
 	}
 
 	if builtins.IsBuiltin(name) {
-		builtins.Execute(name, args)
+		handleError(builtins.Execute(name, args), name)
 		return
 	}
 
@@ -41,9 +53,5 @@ func ParseCommand(input string) {
 	cmd.Stdin = os.Stdin
 
 	err := cmd.Run()
-	if errors.Is(err, exec.ErrNotFound) {
-		fmt.Printf("command '%s' not found\n", name)
-	} else if err != nil {
-		fmt.Println(err)
-	}
+	handleError(err, name)
 }
