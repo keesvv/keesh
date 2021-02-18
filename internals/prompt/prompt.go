@@ -26,7 +26,7 @@ var (
 // Prompt represents a shell prompt.
 type Prompt struct {
 	reader  *bufio.Reader
-	term    *term.Term
+	Term    *term.Term
 	lastDir string
 }
 
@@ -58,7 +58,7 @@ func (p *Prompt) Show() (input string) {
 	fmt.Printf("%s %s\n%s ", segDir, segIcons, segArrow)
 
 	// Enter cbreak mode
-	p.term.SetCbreak()
+	p.Term.SetCbreak()
 
 	// TODO: refactor
 	for {
@@ -91,6 +91,7 @@ func (p *Prompt) Show() (input string) {
 		// CTRL + D
 		if b == 4 {
 			fmt.Println()
+			p.Term.Restore()
 			util.Exit()
 		}
 
@@ -130,13 +131,13 @@ func (p *Prompt) Show() (input string) {
 		}
 	}
 
-	p.term.Restore()
+	p.Term.Restore()
 	return strings.TrimSpace(input)
 }
 
 // NewPrompt instantiates a Prompt.
 func NewPrompt() *Prompt {
-	term, err := term.Open(os.Stdout.Name())
+	Term, err := term.Open(os.Stdout.Name())
 
 	if err != nil {
 		panic(err)
@@ -144,6 +145,9 @@ func NewPrompt() *Prompt {
 
 	return &Prompt{
 		reader: bufio.NewReader(os.Stdin),
-		term:   term,
+		Term:   Term,
 	}
 }
+
+//P Prompt used globally
+var P = NewPrompt()

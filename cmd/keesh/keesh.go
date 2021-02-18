@@ -9,6 +9,9 @@ import (
 )
 
 func main() {
+
+	defer HandleExit()
+
 	// Load the runtime config (rc)
 	config.Runtime.Load()
 
@@ -16,11 +19,15 @@ func main() {
 		parser.ParseCommand(cmd)
 	}
 
-	p := prompt.NewPrompt()
+	p := prompt.P
 
 	for {
 		input := p.Show()
 		parser.ParseCommand(input)
 		fmt.Println()
 	}
+}
+
+func HandleExit() {
+	prompt.P.Term.Restore()
 }
