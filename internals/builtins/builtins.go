@@ -6,6 +6,7 @@ var builtinsMap = map[string]func(args ...string) error{
 	"alias": Alias,
 	"set":   Set,
 	"unset": Unset,
+	"bind":  Bind,
 }
 
 // IsBuiltin returns whether the given command is a shell built-in or not.

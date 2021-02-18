@@ -10,6 +10,7 @@ import (
 	"unicode"
 
 	"github.com/fatih/color"
+	"github.com/keesvv/keesh/internals/keybinds"
 	"github.com/keesvv/keesh/internals/util"
 	"github.com/pkg/term"
 )
@@ -107,6 +108,11 @@ func (p *Prompt) Show() (input string) {
 				input = input[:len(input)-1]
 			}
 			continue
+		}
+
+		if keybinds.IsKeybinding(b) {
+			input = keybinds.GetCommand(b)
+			break
 		}
 
 		if !unicode.IsPrint(rune(b)) {
